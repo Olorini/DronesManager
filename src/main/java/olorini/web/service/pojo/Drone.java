@@ -3,32 +3,65 @@ package olorini.web.service.pojo;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import olorini.db.DroneEntity;
 
+import java.math.BigDecimal;
+
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class Drone {
 
-	private String id;
-	private String name;
+	private Long id;
+	private String serialNumber;
+	private String model;
+	private int weightLimit;
+	private BigDecimal batteryCapacity;
+	private String state;
 
 	public Drone() { }
 
 	public Drone(DroneEntity source) {
-		this.id = source.getId();
-		this.name = source.getName();
+		setSerialNumber(source.getSerialNumber());
+		setModel(source.getModel().getName());
+		setWeightLimit(source.getWeightLimit());
+		setBatteryCapacity(source.getBatteryCapacity());
+		setState(source.getState().getName());
 	}
 
-	public String getId() {
-		return id;
+	public String getSerialNumber() {
+		return serialNumber;
 	}
 
-	public void setId(String id) {
-		this.id = id;
+	public void setSerialNumber(String serialNumber) {
+		this.serialNumber = serialNumber;
 	}
 
-	public String getName() {
-		return name;
+	public String getModel() {
+		return model;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+	public void setModel(String model) {
+		this.model = model;
+	}
+
+	public int getWeightLimit() {
+		return weightLimit;
+	}
+
+	public void setWeightLimit(int weightLimit) {
+		this.weightLimit = weightLimit;
+	}
+
+	public BigDecimal getBatteryCapacity() {
+		return batteryCapacity;
+	}
+
+	public void setBatteryCapacity(BigDecimal batteryCapacity) {
+		this.batteryCapacity = batteryCapacity;
+	}
+
+	public String getState() {
+		return state;
+	}
+
+	public void setState(String state) {
+		this.state = state;
 	}
 }
