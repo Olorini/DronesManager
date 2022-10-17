@@ -7,10 +7,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface DBRepository extends CrudRepository<DroneEntity, Long> {
-
-//	@Query( value = "SELECT * FROM drones", nativeQuery = true)
-//	List<DroneEntity> getDrones();
+public interface DronesRepository extends CrudRepository<DroneEntity, Long> {
 
 	List<DroneEntity> findAll();
 

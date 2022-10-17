@@ -11,17 +11,15 @@ import java.util.Objects;
 public class DroneEntity {
 
 	@Id
-	@Column
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
+	@GeneratedValue(strategy=GenerationType.AUTO)
 	private Long id;
 
 	@Column(unique = true)
 	@Size(min = 1, max = 100)
 	private String serialNumber;
 
-	@OneToOne
-	@JoinColumn(name="model_id")
-	private DroneModelEntity model;
+	@Column
+	private String model;
 
 	@Column
 	@Max(500)
@@ -30,9 +28,8 @@ public class DroneEntity {
 	@Column
 	private BigDecimal batteryCapacity;
 
-	@OneToOne
-	@JoinColumn(name="state_id")
-	private DroneStateEntity state;
+	@Column
+	private String state;
 
 	public DroneEntity() { }
 
@@ -52,11 +49,11 @@ public class DroneEntity {
 		this.serialNumber = serialNumber;
 	}
 
-	public DroneModelEntity getModel() {
+	public String getModel() {
 		return model;
 	}
 
-	public void setModel(DroneModelEntity model) {
+	public void setModel(String model) {
 		this.model = model;
 	}
 
@@ -76,11 +73,11 @@ public class DroneEntity {
 		this.batteryCapacity = batteryCapacity;
 	}
 
-	public DroneStateEntity getState() {
+	public String getState() {
 		return state;
 	}
 
-	public void setState(DroneStateEntity state) {
+	public void setState(String state) {
 		this.state = state;
 	}
 

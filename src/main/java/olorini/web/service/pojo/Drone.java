@@ -18,11 +18,12 @@ public class Drone {
 	public Drone() { }
 
 	public Drone(DroneEntity source) {
+		setId(source.getId());
 		setSerialNumber(source.getSerialNumber());
-		setModel(source.getModel().getName());
+		setModel(source.getModel());
 		setWeightLimit(source.getWeightLimit());
 		setBatteryCapacity(source.getBatteryCapacity());
-		setState(source.getState().getName());
+		setState(source.getState());
 	}
 
 	public String getSerialNumber() {
@@ -63,5 +64,13 @@ public class Drone {
 
 	public void setState(String state) {
 		this.state = state;
+	}
+
+	public Long getId() {
+		return id;
+	}
+
+	public void setId(Long id) {
+		this.id = id;
 	}
 }
