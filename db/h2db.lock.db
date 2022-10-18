@@ -1,6 +1,6 @@
 #FileLock
-#Mon Oct 17 21:58:00 MSK 2022
+#Tue Oct 18 23:53:31 MSK 2022
 hostName=192.168.0.33
-id=183e74f513a593397f4baee82d9e85fda2a96704402
+id=183ecdf6fb908658baf818aa02cb39a7a1bf7000688
 method=file
-server=192.168.0.33\:61324
+server=192.168.0.33\:64710

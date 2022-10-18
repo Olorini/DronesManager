@@ -2,13 +2,11 @@ package olorini.db;
 
 import javax.persistence.*;
 
-@Entity(name = "deliveries")
-@Table(name = "deliveries")
-public class DeliveryEntity {
-
+@Entity(name = "loads")
+@Table(name = "loads")
+public class LoadEntity {
     @Id
-    @Column
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue(strategy=GenerationType.AUTO)
     private Long id;
 
     @OneToOne
@@ -19,7 +17,12 @@ public class DeliveryEntity {
     @JoinColumn(name="medication_id")
     private MedicationEntity medication;
 
-    public DeliveryEntity() { }
+    public LoadEntity() { }
+
+    public LoadEntity(DroneEntity drone, MedicationEntity medication) {
+        this.drone = drone;
+        this.medication = medication;
+    }
 
     public Long getId() {
         return id;

@@ -1,6 +1,8 @@
 package olorini.db;
 
 import javax.persistence.*;
+import javax.validation.constraints.Digits;
+import javax.validation.constraints.Pattern;
 
 @Entity(name = "medication")
 @Table(name = "medication")
@@ -12,12 +14,14 @@ public class MedicationEntity {
     private Long id;
 
     @Column
+    @Pattern(regexp = "[^A-Za-z0-9_-]+")
     private String name;
 
     @Column
     private int weight;
 
     @Column
+    @Pattern(regexp = "[^A-Z0-9_]+")
     private String code;
 
     @Column

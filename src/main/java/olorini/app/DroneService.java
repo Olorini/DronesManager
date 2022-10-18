@@ -1,27 +1,75 @@
 package olorini.app;
 
-import olorini.app.pojo.DroneRecord;
-import olorini.app.pojo.Model;
-import olorini.db.DroneEntity;
-import olorini.db.DronesRepository;
+import olorini.db.*;
 import olorini.web.service.pojo.Drone;
+import olorini.web.service.pojo.Load;
+import olorini.web.service.pojo.Medication;
+import olorini.web.service.pojo.State;
 import org.apache.commons.lang3.EnumUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Component
 public class DroneService {
 
-    private final DronesRepository repository;
+    private final DronesRepository dronesRepository;
+    private final MedicationRepository medicationRepository;
+    private final LoadsRepository loadsRepository;
 
     @Autowired
-    public DroneService(DronesRepository repository) {
-        this.repository = repository;
+    public DroneService(DronesRepository dronesRepository,
+                        MedicationRepository medicationRepository,
+                        LoadsRepository loadsRepository) {
+        this.dronesRepository = dronesRepository;
+        this.medicationRepository = medicationRepository;
+        this.loadsRepository = loadsRepository;
+    }
+
+    public List<Long> load(Load request) {
+        List<Long> result = new ArrayList<>();
+        if (request.getDroneId() == null) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Drone identifier is empty");
+        }
+        if (request.getMedicineIds().isEmpty()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "List of medicine identifiers are empty");
+        }
+        Optional<DroneEntity> dbDrone = dronesRepository.findById(request.getDroneId());
+        if (!dbDrone.isPresent()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Drone is not found");
+        }
+        DroneEntity droneEntity = dbDrone.get();
+        checkDroneAvailableForLoading(droneEntity);
+        saveDroneState(State.LOADING, droneEntity);
+        List<MedicationEntity> medicationEntities = medicationRepository.findByIdIn(request.getMedicineIds());
+        if (medicationEntities.isEmpty()) {
+            saveDroneState(State.IDLE, droneEntity);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Medicines are not found");
+        }
+        int weight = medicationEntities.stream()
+                .map(MedicationEntity::getWeight)
+                .reduce(Integer::sum).get();
+        if (weight > droneEntity.getWeightLimit()) {
+            saveDroneState(State.IDLE, droneEntity);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Weight of medicine is very large");
+        }
+        for (MedicationEntity medication : medicationEntities) {
+            LoadEntity loadEntity = new LoadEntity(droneEntity, medication);
+            LoadEntity resultEntity = loadsRepository.save(loadEntity);
+            result.add(resultEntity.getId());
+        }
+        if (!result.isEmpty()) {
+            saveDroneState(State.LOADED, droneEntity);
+        } else {
+            saveDroneState(State.IDLE, droneEntity);
+        }
+        return result;
     }
 
     public Long register(Drone request) {
@@ -29,22 +77,42 @@ public class DroneService {
         if (serialNumber == null || serialNumber.length() > 100) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Serial number is too long");
         }
-        if (!EnumUtils.isValidEnumIgnoreCase(Model.class, request.getModel())) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Model of drone has a wrong value");
-        }
         if (request.getWeightLimit() > 500) {
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Weight limit is too big");
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Weight limit is very large");
         }
-        DroneEntity droneEntity = new DroneRecord(request).getDBEntity();
-        DroneEntity answer = repository.save(droneEntity);
-        return answer.getId();
+        request.setState(State.IDLE);
+        DroneEntity entity = new DroneEntity(request);
+        DroneEntity result = dronesRepository.save(entity);
+        return result.getId();
+    }
+
+    private void checkDroneAvailableForLoading(DroneEntity droneEntity) {
+        if (EnumUtils.getEnumIgnoreCase(State.class, droneEntity.getState()) != State.IDLE) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Drone is busy");
+        }
+        if (droneEntity.getBatteryCapacity() < 25) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Drone isn't charged");
+        }
+
     }
 
     public List<Drone> getDrones() {
-        List<DroneEntity> drones = repository.findAll();
+        List<DroneEntity> drones = dronesRepository.findAll();
         return drones.stream()
                 .map(Drone::new)
                 .collect(Collectors.toList());
+    }
+
+    public List<Medication> getMedication() {
+        List<MedicationEntity> medication = medicationRepository.findAll();
+        return medication.stream()
+                .map(Medication::new)
+                .collect(Collectors.toList());
+    }
+
+    private void saveDroneState(State state, DroneEntity drone) {
+        drone.setState(state.name());
+        dronesRepository.save(drone);
     }
 
 }

@@ -2,28 +2,28 @@ package olorini.web.service.pojo;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import olorini.db.DroneEntity;
+import org.apache.commons.lang3.EnumUtils;
 
 import java.math.BigDecimal;
 
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class Drone {
-
 	private Long id;
 	private String serialNumber;
-	private String model;
+	private Model model;
 	private int weightLimit;
-	private BigDecimal batteryCapacity;
-	private String state;
+	private int batteryCapacity;
+	private State state;
 
 	public Drone() { }
 
 	public Drone(DroneEntity source) {
 		setId(source.getId());
 		setSerialNumber(source.getSerialNumber());
-		setModel(source.getModel());
+		setModel(EnumUtils.getEnumIgnoreCase(Model.class, source.getModel()));
 		setWeightLimit(source.getWeightLimit());
 		setBatteryCapacity(source.getBatteryCapacity());
-		setState(source.getState());
+		setState(EnumUtils.getEnumIgnoreCase(State.class, source.getModel()));
 	}
 
 	public String getSerialNumber() {
@@ -34,11 +34,11 @@ public class Drone {
 		this.serialNumber = serialNumber;
 	}
 
-	public String getModel() {
+	public Model getModel() {
 		return model;
 	}
 
-	public void setModel(String model) {
+	public void setModel(Model model) {
 		this.model = model;
 	}
 
@@ -50,19 +50,19 @@ public class Drone {
 		this.weightLimit = weightLimit;
 	}
 
-	public BigDecimal getBatteryCapacity() {
+	public int getBatteryCapacity() {
 		return batteryCapacity;
 	}
 
-	public void setBatteryCapacity(BigDecimal batteryCapacity) {
+	public void setBatteryCapacity(int batteryCapacity) {
 		this.batteryCapacity = batteryCapacity;
 	}
 
-	public String getState() {
+	public State getState() {
 		return state;
 	}
 
-	public void setState(String state) {
+	public void setState(State state) {
 		this.state = state;
 	}
 

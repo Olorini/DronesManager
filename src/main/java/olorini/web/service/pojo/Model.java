@@ -1,4 +1,4 @@
-package olorini.app.pojo;
+package olorini.web.service.pojo;
 
 public enum Model {
 

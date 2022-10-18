@@ -1,9 +1,10 @@
 package olorini.db;
 
+import olorini.web.service.pojo.Drone;
+
 import javax.persistence.*;
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Size;
-import java.math.BigDecimal;
 import java.util.Objects;
 
 @Entity(name = "drones")
@@ -26,12 +27,20 @@ public class DroneEntity {
 	private int weightLimit;
 
 	@Column
-	private BigDecimal batteryCapacity;
+	private int batteryCapacity;
 
 	@Column
 	private String state;
 
 	public DroneEntity() { }
+
+	public DroneEntity(Drone source) {
+		setSerialNumber(source.getSerialNumber());
+		setModel(source.getModel().name());
+		setWeightLimit(source.getWeightLimit());
+		setBatteryCapacity(source.getBatteryCapacity());
+		setState(source.getState().name());
+	}
 
 	public Long getId() {
 		return id;
@@ -65,11 +74,11 @@ public class DroneEntity {
 		this.weightLimit = weightLimit;
 	}
 
-	public BigDecimal getBatteryCapacity() {
+	public int getBatteryCapacity() {
 		return batteryCapacity;
 	}
 
-	public void setBatteryCapacity(BigDecimal batteryCapacity) {
+	public void setBatteryCapacity(int batteryCapacity) {
 		this.batteryCapacity = batteryCapacity;
 	}
 
