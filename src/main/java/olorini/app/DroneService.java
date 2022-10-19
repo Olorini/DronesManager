@@ -32,7 +32,7 @@ public class DroneService {
         this.loadsRepository = loadsRepository;
     }
 
-    public List<Long> load(Load request) {
+    public void load(Load request) {
         List<Long> result = new ArrayList<>();
         if (request.getDroneId() == null) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Drone identifier is empty");
@@ -69,7 +69,6 @@ public class DroneService {
         } else {
             saveDroneState(State.IDLE, droneEntity);
         }
-        return result;
     }
 
     public Long register(Drone request) {
@@ -86,6 +85,43 @@ public class DroneService {
         return result.getId();
     }
 
+    public List<Drone> getDrones() {
+        List<DroneEntity> drones = dronesRepository.findAll();
+        return drones.stream()
+                .map(Drone::new)
+                .collect(Collectors.toList());
+    }
+
+    public List<Drone> getIdleDrones() {
+        List<DroneEntity> drones = dronesRepository.findByState(State.IDLE.name());
+        return drones.stream()
+                .map(Drone::new)
+                .collect(Collectors.toList());
+    }
+
+    public int getBatteryLevel(long droneId) {
+        Optional<DroneEntity> droneEntity = dronesRepository.findById(droneId);
+        if (!droneEntity.isPresent()) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Drone is not found");
+        }
+        return droneEntity.get().getBatteryCapacity();
+    }
+
+    public List<Medication> getMedication() {
+        List<MedicationEntity> medication = medicationRepository.findAll();
+        return medication.stream()
+                .map(Medication::new)
+                .collect(Collectors.toList());
+    }
+
+    public List<Medication> getMedication(long droneId) {
+        List<LoadEntity> loads = loadsRepository.getByDroneId(droneId);
+        return loads.stream()
+                .map(LoadEntity::getMedication)
+                .map(Medication::new)
+                .collect(Collectors.toList());
+    }
+
     private void checkDroneAvailableForLoading(DroneEntity droneEntity) {
         if (EnumUtils.getEnumIgnoreCase(State.class, droneEntity.getState()) != State.IDLE) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Drone is busy");
@@ -94,20 +130,6 @@ public class DroneService {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Drone isn't charged");
         }
 
-    }
-
-    public List<Drone> getDrones() {
-        List<DroneEntity> drones = dronesRepository.findAll();
-        return drones.stream()
-                .map(Drone::new)
-                .collect(Collectors.toList());
-    }
-
-    public List<Medication> getMedication() {
-        List<MedicationEntity> medication = medicationRepository.findAll();
-        return medication.stream()
-                .map(Medication::new)
-                .collect(Collectors.toList());
     }
 
     private void saveDroneState(State state, DroneEntity drone) {

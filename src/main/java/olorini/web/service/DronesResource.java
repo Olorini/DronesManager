@@ -23,12 +23,12 @@ public class DronesResource {
         this.service = service;
     }
 
-    @GetMapping(path = "/fleet")
+    @GetMapping(path = "/fleet", produces = "application/json")
     public List<Drone> getDrones() {
         return service.getDrones();
     }
 
-    @GetMapping(path="/medication")
+    @GetMapping(path="/medication", produces = "application/json")
     public List<Medication> getMedication() {
         return service.getMedication();
     }
@@ -43,6 +43,21 @@ public class DronesResource {
     public ResponseEntity<Object> loadDrone(@RequestBody Load request) {
         service.load(request);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping(path="/get_medication", produces = "application/json")
+    public List<Medication> getMedication(long droneId) {
+        return service.getMedication(droneId);
+    }
+
+    @GetMapping(path = "/get_idle_drones", produces = "application/json")
+    public List<Drone> getIdleDrones() {
+        return service.getIdleDrones();
+    }
+
+    @GetMapping(path = "/get_battery_level", produces = "application/json")
+    public int getBatteryLevel(long droneId) {
+        return service.getBatteryLevel(droneId);
     }
 
 }
