@@ -1,6 +1,7 @@
 package olorini.web.service;
 
 import olorini.app.DroneService;
+import olorini.app.JournalService;
 import olorini.web.service.pojo.Load;
 import olorini.web.service.pojo.Drone;
 import olorini.web.service.pojo.Medication;
@@ -17,10 +18,12 @@ import java.util.Map;
 public class DronesResource {
 
     private final DroneService service;
+    private final JournalService journalService;
 
     @Autowired
-    public DronesResource(DroneService service) {
+    public DronesResource(DroneService service, JournalService journalService) {
         this.service = service;
+        this.journalService = journalService;
     }
 
     @GetMapping(path = "/fleet", produces = "application/json")
@@ -56,8 +59,14 @@ public class DronesResource {
     }
 
     @GetMapping(path = "/get_battery_level", produces = "application/json")
-    public int getBatteryLevel(long droneId) {
-        return service.getBatteryLevel(droneId);
+    public Map<String, Integer> getBatteryLevel(long droneId) {
+        int batteryLevel = service.getBatteryLevel(droneId);
+         return Collections.singletonMap("batteryLevel", batteryLevel);
+    }
+
+    @GetMapping(path = "/journal", produces = "text/html")
+    public String getJournal() {
+        return journalService.getFileData();
     }
 
 }

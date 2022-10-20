@@ -1,7 +1,6 @@
 package olorini.db;
 
 import javax.persistence.*;
-import javax.validation.constraints.Digits;
 import javax.validation.constraints.Pattern;
 
 @Entity(name = "medication")

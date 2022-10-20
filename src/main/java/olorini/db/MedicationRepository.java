@@ -8,8 +8,6 @@ import java.util.List;
 
 @Repository
 public interface MedicationRepository extends CrudRepository<MedicationEntity, Long> {
-
 	List<MedicationEntity> findAll();
 	List<MedicationEntity> findByIdIn(List<Long> ids);
-
 }

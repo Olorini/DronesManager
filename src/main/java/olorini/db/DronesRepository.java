@@ -12,5 +12,5 @@ public interface DronesRepository extends CrudRepository<DroneEntity, Long> {
 	List<DroneEntity> findAll();
 	Optional<DroneEntity> findById(Long id);
 	List<DroneEntity> findByState(String state);
-
+	boolean existsBySerialNumber(String serialNumber);
 }

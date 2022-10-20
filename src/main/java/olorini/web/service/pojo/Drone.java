@@ -4,8 +4,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import olorini.db.DroneEntity;
 import org.apache.commons.lang3.EnumUtils;
 
-import java.math.BigDecimal;
-
 @JsonInclude(JsonInclude.Include.NON_EMPTY)
 public class Drone {
 	private Long id;

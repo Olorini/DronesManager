@@ -18,7 +18,6 @@ import java.util.stream.Collectors;
 
 @Component
 public class DroneService {
-
     private final DronesRepository dronesRepository;
     private final MedicationRepository medicationRepository;
     private final LoadsRepository loadsRepository;
@@ -75,6 +74,9 @@ public class DroneService {
         String serialNumber = request.getSerialNumber();
         if (serialNumber == null || serialNumber.length() > 100) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Serial number is too long");
+        }
+        if (dronesRepository.existsBySerialNumber(serialNumber)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Drone with this serial number is already exist");
         }
         if (request.getWeightLimit() > 500) {
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Weight limit is very large");
